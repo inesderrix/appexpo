@@ -7,13 +7,15 @@ const mongoose = require('mongoose');
 require("./src/services/mongo");
 
 const itemsRouter = require('./src/controllers/Item');
+const userRouter = require('./src/controllers/User');
 
 console.log("hello")
 app.use(morgan("tiny"));
 
 app.use(express.json()); 
 
-app.use('/items', itemsRouter)
+app.use('/items', itemsRouter);
+app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
