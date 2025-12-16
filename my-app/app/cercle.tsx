@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { Animated, StyleSheet } from "react-native";
+import { BlurView } from "expo-blur";
 
 export default function BackgroundCircles() {
     const topLeftAnim = useRef(new Animated.Value(0)).current;
@@ -30,7 +31,9 @@ export default function BackgroundCircles() {
                     styles.topLeft,
                     { width: 350, height: 350, borderRadius: 175, transform: [{ translateX: topLeftAnim }] },
                 ]}
-            />
+            >
+                <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
+            </Animated.View>
 
             <Animated.View
                 style={[
@@ -38,7 +41,9 @@ export default function BackgroundCircles() {
                     styles.middleRight,
                     { width: 250, height: 250, borderRadius: 125, transform: [{ translateY: middleRightAnim }] },
                 ]}
-            />
+            >
+                <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
+            </Animated.View>
 
             <Animated.View
                 style={[
@@ -46,7 +51,9 @@ export default function BackgroundCircles() {
                     styles.bottomCenter,
                     { width: 180, height: 180, borderRadius: 90, transform: [{ translateX: bottomCenterAnim }] },
                 ]}
-            />
+            >
+                <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
+            </Animated.View>
         </>
     );
 }
@@ -54,7 +61,9 @@ export default function BackgroundCircles() {
 const styles = StyleSheet.create({
     circle: {
         position: "absolute",
+        overflow: "hidden",
         backgroundColor: "rgba(0,122,255,0.2)",
+        zIndex:-1,
     },
     topLeft: { top: -50, left: -50 },
     middleRight: { top: 300, right: -80 },
