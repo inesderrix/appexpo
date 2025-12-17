@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import BackgroundCircles from "./cercle";
 import { useState } from "react";
@@ -47,7 +47,9 @@ export default function SignIn() {
 
     return (
 
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}
+            behavior="padding"
+        >
             <BackgroundCircles />
             <Ionicons name="person" size={24} color="black" />
             <Text style={styles.title}>Connexion</Text>
@@ -76,8 +78,7 @@ export default function SignIn() {
             <Link href="/signup" style={styles.link}>
                 Créer un compte
             </Link>
-
-        </View>
+        </KeyboardAvoidingView>
 
     );
 }

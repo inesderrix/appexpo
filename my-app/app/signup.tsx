@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView } from "react-native";
 import { useState } from "react";
 import BackgroundCircles from "./cercle";
 import { useRouter, Link } from "expo-router";
 import config from "../config";
 import useAuthStore from "../store/authStore"
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SignUp() {
     const router = useRouter();
@@ -29,7 +30,7 @@ export default function SignUp() {
                 },
                 body: JSON.stringify({
                     email,
-                    first_name: firstName, 
+                    first_name: firstName,
                     last_name: lastName,
                     password,
                 }),
@@ -56,9 +57,14 @@ export default function SignUp() {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}
+            behavior="padding"
+            >
+
+
 
             <BackgroundCircles />
+            <Ionicons name="person" size={24} color="black" />
             <Text style={styles.title}>Créer un compte</Text>
 
             <TextInput
@@ -107,14 +113,14 @@ export default function SignUp() {
             <Link href="/signin" style={styles.link}>
                 Se connecter
             </Link>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        padding: 20,
+        alignItems: "center", padding: 20, width: '100%'
     },
     title: {
         fontSize: 26,

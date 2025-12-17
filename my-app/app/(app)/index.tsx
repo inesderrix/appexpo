@@ -1,10 +1,12 @@
 import { View, TextInput, Button, FlatList, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import React from "react";
 import { useState, useEffect } from "react";
 import { Checkbox } from "expo-checkbox";
 import BackgroundCircles from "../cercle";
 import useAuthStore from "../../store/authStore"
 import config from "../../config";
+import { useFocusEffect } from "expo-router";
 
 
 export default function CoursesScreen() {
@@ -48,16 +50,17 @@ export default function CoursesScreen() {
     fetchHistoriqueItems();
   };
 
-  useEffect(() => {
+  useFocusEffect(React.useCallback(() => {
     refreshLists();
-  }, []);
+  }, [])
+  );
 
 
   const addItem = async () => {
     if (!item.trim()) return;
 
     try {
-      const res = await fetch(`${config.API_BASE_URL}/items`, {
+      await fetch(`${config.API_BASE_URL}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -91,7 +94,7 @@ export default function CoursesScreen() {
   const handleCheck = async (itemId: string) => {
     console.log('item id', itemId)
     try {
-      const res = await fetch(`${config.API_BASE_URL}/items/${itemId}/check`, {
+      await fetch(`${config.API_BASE_URL}/items/${itemId}/check`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ checked: true }),
@@ -136,18 +139,25 @@ export default function CoursesScreen() {
             placeholderTextColor="#999"
             value={search}
             onChangeText={setSearch}
-            style={styles.input}
+            style={[styles.input, styles.searchInput]}
             autoCorrect={false}
           />
 
           <TouchableOpacity
-            style={styles.addButton}
+            style={[styles.actionBtn, styles.btnAdd]}
             onPress={() => {
               setModalVisible(true)
             }}
           >
-            <Ionicons name="add" size={26} color="#fff" />
+            <Ionicons name="add" size={26} color="white" />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.btnDelete]}
+            onPress={() => setClearModalVisible(true)}
+          >
+            <MaterialIcons name="clear" size={24} color="white" />
+          </TouchableOpacity>
+
         </View>
 
 
@@ -156,27 +166,29 @@ export default function CoursesScreen() {
             <View style={styles.modalContainer}>
               <Text style={{ fontSize: 18, marginBottom: 10 }}>Ajouter un produit</Text>
               <TextInput
+                placeholderTextColor="#999"
                 placeholder="Nom du produit"
                 value={item}
                 onChangeText={setItem}
                 style={styles.input}
               />
-              <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <Button
-                  title="Annuler"
-                  color="red"
-                  onPress={() => {
-                    setItem("");
-                    setModalVisible(false);
-                  }}
-                />
-                <Button
-                  title="Ajouter"
+              <View style={styles.modalActions}>
+                <TouchableOpacity onPress={() => {
+                  setItem("");
+                  setModalVisible(false);
+                }}>
+                  <Text style={styles.cancelText}>Annuler</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonSecondary}
                   onPress={() => {
                     addItem();
                     setModalVisible(false);
                   }}
-                />
+                >
+                  <Text style={styles.buttonSecondaryText}>Ajouter</Text>
+                </TouchableOpacity>
+
               </View>
             </View>
           </View>
@@ -196,7 +208,13 @@ export default function CoursesScreen() {
                 />
                 <Text style={styles.item}>{item.title}</Text>
               </View>
-              <Button title="Supprimer" onPress={() => removeItem(item._id)} />
+              <TouchableOpacity
+                onPress={() => {
+                  removeItem(item._id)
+                }}
+              >
+                <MaterialIcons name="delete" size={24} color="#888" />
+              </TouchableOpacity>
             </View>
           )}
         />
@@ -214,11 +232,6 @@ export default function CoursesScreen() {
         />
 
 
-        <Button
-          title="Vider la liste"
-          color="red"
-          onPress={() => setClearModalVisible(true)}
-        />
 
         <Modal
           visible={clearModalVisible}
@@ -282,12 +295,9 @@ const styles = StyleSheet.create({
   }, content: {
     flex: 1,
     padding: 20,
-  },
-
-
-  input: {
+  }, searchInput: {
     flex: 1,
-    width: "auto",
+  }, input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
@@ -298,17 +308,18 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
     marginBottom: 15,
   },
-  itemContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 5 },
+  itemContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
   item: { fontSize: 18 },
   checkbox: { marginRight: 10 },
   itemWithCheckbox: { flexDirection: "row", alignItems: "center" },
   modalBackground: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000088" },
   modalContainer: { width: "80%", padding: 20, backgroundColor: "#fff", borderRadius: 10 },
-  addButton: {
-    backgroundColor: "rgba(0,122,255,0.2)",
+  btnAdd: { backgroundColor: "rgba(0,122,255,0.2)", },
+  btnDelete: { backgroundColor: "rgba(255, 0, 0, 0.2)", },
+  actionBtn: {
     width: 52,
     height: 52,
     borderRadius: 26,
@@ -348,8 +359,14 @@ const styles = StyleSheet.create({
   }, cancelText: {
     textAlign: "center",
     color: "#888",
-    fontSize: 15,
-    marginTop: 5,
+    fontSize: 16,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 16,
   },
 
 

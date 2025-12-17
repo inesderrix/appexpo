@@ -65,17 +65,15 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// DELETE /items/clear/:userId?type=active|history|all
 router.delete('/clear/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const { type } = req.query; // "active", "history" ou "all"
+        const { type } = req.query; 
 
         let filter = { user: userId };
 
         if (type === 'active') filter.checked = false;
         else if (type === 'history') filter.checked = true;
-        // si type === 'all' ou absent, on garde juste user: userId
 
         const result = await ItemsObject.deleteMany(filter);
         res.status(200).json({ message: `Items supprimés (${type || 'all'})`, deletedCount: result.deletedCount });

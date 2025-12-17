@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Alert, TouchableOpacity , } from "react-native";
 import useAuthStore from "@/store/authStore";
 import { router } from "expo-router";
 import BackgroundCircles from "../cercle";
+import config from "@/config";
 
 
 export default function ProfileScreen() {
@@ -10,6 +11,18 @@ export default function ProfileScreen() {
 
     if (!user) {
         return <Text>Chargement...</Text>;
+    }
+
+    const deleteUser = async ()=>{
+        try {
+            await fetch(`${config.API_BASE_URL}/users/${user.id}`,{method: 'DELETE',});
+            Alert.alert('Succès', 'Compte supprimé avec succès');
+            logout();
+            router.replace("/signup");
+        }catch (err){
+            Alert.alert('Error', 'Erreur de suppression de compte');
+            console.error(err , 'Erreur de suppression de compte')
+        }
     }
 
     const handleLogout = () => {
@@ -38,6 +51,9 @@ export default function ProfileScreen() {
                 </View>
 
                 <Button title="Se déconnecter" color="red" onPress={handleLogout} />
+            <TouchableOpacity onPress={() => deleteUser()} style={styles.buttonDanger}>
+                <Text style={styles.buttonDangerText}>Supprimer le compte</Text>
+                          </TouchableOpacity>
             </View>
         </View>
     );
@@ -71,5 +87,16 @@ const styles = StyleSheet.create({
     label: {
         fontWeight: "bold",
         marginTop: 10,
+    }, buttonDanger: {
+        backgroundColor: "#FF3B30",
+        paddingVertical: 14,
+        borderRadius: 10,
+        alignItems: "center",
+        marginVertical: 12,
+    },
+    buttonDangerText: {
+        color: "#fff",
+        fontWeight: "700",
+        fontSize: 16,
     },
 });
