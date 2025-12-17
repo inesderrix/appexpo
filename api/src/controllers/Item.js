@@ -4,9 +4,10 @@ const router = require('express').Router();
 
 router.post('/', async (req, res) => {
     try {
-        const newItem = new ItemsObject(req.body);
+        const { title, userId } = req.body;
+        const newItem = new ItemsObject({ title, user: userId });
         const savedItem = await newItem.save();
-        res.status(201).send({ item: savedItem });
+        res.status(201).send(savedItem);
     } catch (err) {
         res.status(500).send({ error: err.message });
     }
@@ -14,29 +15,32 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const items = await ItemsObject.find();
-        res.status(200).send({ items });
+        const { userId } = req.query;
+        const items = await ItemsObject.find({ user: userId });
+        res.status(200).send(items);
     } catch (err) {
         res.status(500).send({ error: err.message });
     }
 });
 
 router.get('/active', async (req, res) => {
-  try {
-      const items = await ItemsObject.find({ checked: false });
-    res.status(200).json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const { userId } = req.query;
+        const items = await ItemsObject.find({ checked: false, user: userId });
+        res.status(200).json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/history', async (req, res) => {
-  try {
-      const items = await ItemsObject.find({ checked: true });
-    res.status(200).json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const { userId } = req.query;
+        const items = await ItemsObject.find({ checked: true, user: userId });
+        res.status(200).json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.patch('/:id', async (req, res) => {

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "reac
 import { Ionicons } from "@expo/vector-icons";
 import BackgroundCircles from "./cercle";
 import { useState } from "react";
-import { useRouter } from "expo-router";
+import { useRouter, Link } from "expo-router";
 import config from "../config";
 import useAuthStore from "../store/authStore"
 
@@ -17,14 +17,16 @@ export default function SignIn() {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert("Erreur", "Tous les champs sont obligatoires");
+            return;
+        }
         try {
             const response = await fetch(`${config.API_BASE_URL}/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', "ngrok-skip-browser-warning": "true", },
                 body: JSON.stringify({ email, password }),
             });
-
-            console.log('Reposne ', response)
 
             const data = await response.json();
             if (response.ok) {
@@ -71,6 +73,10 @@ export default function SignIn() {
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Se connecter</Text>
             </TouchableOpacity>
+            <Link href="/signup" style={styles.link}>
+                Créer un compte
+            </Link>
+
         </View>
 
     );
@@ -78,7 +84,12 @@ export default function SignIn() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, width: '100%' },
-    title: { fontSize: 26, fontWeight: "bold", marginBottom: 30 },
+    title: {
+        fontSize: 26,
+        fontWeight: "bold",
+        marginBottom: 30,
+        textAlign: "center",
+    },
     input: {
         width: "100%",
         borderWidth: 1,
@@ -96,4 +107,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+    link: {
+        marginTop: 15,
+        color: "#007AFF",
+        textAlign: "center",
+    }
+
 });
