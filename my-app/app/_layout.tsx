@@ -6,7 +6,7 @@ export default function RootLayout() {
     const { isLoggedIn } = useAuthStore();
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
             <Stack>
                 <Stack.Protected guard={isLoggedIn}>
                     <Stack.Screen name="(app)" options={{ headerShown: false }} />
