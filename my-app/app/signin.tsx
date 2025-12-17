@@ -11,6 +11,7 @@ export default function SignIn() {
     const router = useRouter();
     const { setIsLoggedIn, setUser } = useAuthStore();
 
+    // console.log(useAuthStore.getState());
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,7 +20,7 @@ export default function SignIn() {
         try {
             const response = await fetch(`${config.API_BASE_URL}/users/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', "ngrok-skip-browser-warning": "true", },
                 body: JSON.stringify({ email, password }),
             });
 
