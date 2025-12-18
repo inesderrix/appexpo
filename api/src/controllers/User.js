@@ -1,17 +1,27 @@
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 const router = require('express').Router();
+
+const User = require('../models/User');
+const config = require("../../config");
+
+const JWT_MAX_AGE = "6m";
 
 router.post('/signup', async (req, res) => {
     try {
-        console.log("BODY SIGNUP 👉", req.body);
         const { email, first_name, last_name, password } = req.body;
-        const existingUser = await User.findOne({ email });  
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use' });
         }
 
         const newUser = new User({ email, firstName: first_name, lastName: last_name, password });
         await newUser.save();
+
+        const token = jwt.sign({ _id: newUser.id }, config.SECRET, {
+            expiresIn: JWT_MAX_AGE,
+        });
+
         res.status(201).json({
             message: 'User created successfully',
             user: {
@@ -20,6 +30,7 @@ router.post('/signup', async (req, res) => {
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
             },
+            token,
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -42,6 +53,9 @@ router.post('/login', async (req, res) => {
             last_login: new Date(),
         });
 
+        const token = jwt.sign({ _id: user.id }, config.SECRET, {
+            expiresIn: JWT_MAX_AGE,
+        });
         res.status(200).json({
             message: 'Login successful',
             user: {
@@ -50,16 +64,21 @@ router.post('/login', async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
             },
+            token,
         });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 
-router.get("/all", async (req, res) => {
+router.get("/all", passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
-        const users = await User.find(); 
+        const users = await User.find();
         console.log(users);
         res.status(200).json(users);
     } catch (err) {
@@ -67,7 +86,10 @@ router.get("/all", async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "User deleted" });

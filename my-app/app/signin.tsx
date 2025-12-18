@@ -9,7 +9,7 @@ import useAuthStore from "../store/authStore"
 
 export default function SignIn() {
     const router = useRouter();
-    const { setIsLoggedIn, setUser } = useAuthStore();
+    const { setIsLoggedIn, setUser , setToken} = useAuthStore();
 
     // console.log(useAuthStore.getState());
 
@@ -32,6 +32,7 @@ export default function SignIn() {
             if (response.ok) {
                 setIsLoggedIn(true);
                 setUser(data.user);
+                setToken(data.token);
                 Alert.alert('Success', 'Login successful');
                 console.log('Login successful:', data);
 

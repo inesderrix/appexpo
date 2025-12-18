@@ -8,15 +8,17 @@ import config from "../../config";
 import { useFocusEffect } from "expo-router";
 
 export default function HistoryScreen() {
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const userId = user.id;
     const [search, setSearch] = useState("");
     const [historiqueItems, setHistoriqueItems] = useState<any[]>([]);
     const [clearModalVisible, setClearModalVisible] = useState(false);
 
+    console.log("Token dans historique :", token);
+
     const fetchHistoriqueItems = async () => {
         try {
-            const res = await fetch(`${config.API_BASE_URL}/items/history?userId=${userId}`);
+            const res = await fetch(`${config.API_BASE_URL}/items/history?userId=${userId}`, { headers:{ 'Authorization': `Bearer ${token}` }, });
             const data = await res.json();
             setHistoriqueItems(data);
         } catch (err) {
@@ -36,7 +38,7 @@ export default function HistoryScreen() {
 
     const removeItem = async (id: string) => {
         try {
-            await fetch(`${config.API_BASE_URL}/items/${id}`, { method: "DELETE" });
+            await fetch(`${config.API_BASE_URL}/items/${id}`, { method: "DELETE",  headers: { 'Authorization': `Bearer ${token}`}});
             fetchHistoriqueItems();
         } catch (err) {
             console.error("Erreur delete item", err);
@@ -45,7 +47,7 @@ export default function HistoryScreen() {
 
     const clearHistory = async () => {
         try {
-            await fetch(`${config.API_BASE_URL}/items/clear/${userId}?type=history`, { method: "DELETE" });
+            await fetch(`${config.API_BASE_URL}/items/clear/${userId}?type=history`, { method: "DELETE", headers: { 'Authorization': `Bearer ${token}` } });
             fetchHistoriqueItems();
             setClearModalVisible(false);
         } catch (err) {

@@ -12,9 +12,12 @@ const userRouter = require('./src/controllers/User');
 
 console.log("hello")
 
+
 app.use(morgan("tiny"));
 app.use(express.json()); 
 app.use(cors({ credentials: true, origin: "*" }));
+
+require("./src/services/passport")(app);
 
 app.use('/items', itemsRouter);
 app.use('/users', userRouter);

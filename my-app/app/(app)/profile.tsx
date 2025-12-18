@@ -7,7 +7,7 @@ import config from "@/config";
 
 export default function ProfileScreen() {
 
-    const { user, logout } = useAuthStore();
+    const { user, logout , token} = useAuthStore();
 
     if (!user) {
         return <Text>Chargement...</Text>;
@@ -15,7 +15,7 @@ export default function ProfileScreen() {
 
     const deleteUser = async ()=>{
         try {
-            await fetch(`${config.API_BASE_URL}/users/${user.id}`,{method: 'DELETE',});
+            await fetch(`${config.API_BASE_URL}/users/${user.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
             Alert.alert('Succès', 'Compte supprimé avec succès');
             logout();
             router.replace("/signup");

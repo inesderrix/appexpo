@@ -1,4 +1,4 @@
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Modal, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { useState, useEffect } from "react";
@@ -11,7 +11,7 @@ import { useFocusEffect } from "expo-router";
 
 export default function CoursesScreen() {
 
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const userId = user.id;
   console.log('id user', userId)
 
@@ -27,7 +27,11 @@ export default function CoursesScreen() {
   const fetchItems = async () => {
     try {
       const res = await fetch(
-        `${config.API_BASE_URL}/items/active?userId=${userId}`
+        `${config.API_BASE_URL}/items/active?userId=${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       const data = await res.json();
       setActiveItems(data);
@@ -37,7 +41,11 @@ export default function CoursesScreen() {
   };
   const fetchHistoriqueItems = async () => {
     try {
-      const res = await fetch(`${config.API_BASE_URL}/items/history?userId=${userId}`);
+      const res = await fetch(`${config.API_BASE_URL}/items/history?userId=${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       setHistoriqueItems(data);
     } catch (err) {
@@ -62,7 +70,7 @@ export default function CoursesScreen() {
     try {
       await fetch(`${config.API_BASE_URL}/items`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           title: item,
           userId: userId,
@@ -83,6 +91,9 @@ export default function CoursesScreen() {
     try {
       await fetch(`${config.API_BASE_URL}/items/${id}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       refreshLists();
     } catch (err) {
@@ -96,7 +107,7 @@ export default function CoursesScreen() {
     try {
       await fetch(`${config.API_BASE_URL}/items/${itemId}/check`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ checked: true }),
       });
 
@@ -108,7 +119,7 @@ export default function CoursesScreen() {
 
   const clearList = async (type: 'active' | 'history' | 'all' = 'all') => {
     try {
-      await fetch(`${config.API_BASE_URL}/items/clear/${userId}?type=${type}`, { method: 'DELETE' });
+      await fetch(`${config.API_BASE_URL}/items/clear/${userId}?type=${type}`, { method: 'DELETE', headers: {'Authorization': `Bearer ${token}`}});
       fetchItems();
       fetchHistoriqueItems();
     } catch (err) {
@@ -160,7 +171,9 @@ export default function CoursesScreen() {
 
         </View>
 
-
+ <KeyboardAvoidingView style={styles.container}
+            behavior="padding"
+        >
         <Modal visible={modalVisible} transparent animationType="slide">
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
@@ -193,7 +206,7 @@ export default function CoursesScreen() {
             </View>
           </View>
         </Modal>
-
+        </KeyboardAvoidingView>
         <FlatList
           data={filteredList}
           keyExtractor={(item) => item._id}
@@ -228,7 +241,7 @@ export default function CoursesScreen() {
             </View>
           )}
           ListEmptyComponent={<Text style={{ color: "#aaa" }}>Aucun historique</Text>}
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20, height: 150 }}
         />
 
 

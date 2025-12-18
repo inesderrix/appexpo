@@ -1,8 +1,12 @@
-const ItemsObject = require('../models/Item');
+const passport = require("passport");
 const router = require('express').Router();
 
+const ItemsObject = require('../models/Item');
 
-router.post('/', async (req, res) => {
+router.post('/',  passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}),async (req, res) => {
     try {
         const { title, userId } = req.body;
         const newItem = new ItemsObject({ title, user: userId });
@@ -13,7 +17,10 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
         const { userId } = req.query;
         const items = await ItemsObject.find({ user: userId });
@@ -23,7 +30,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/active', async (req, res) => {
+router.get('/active', passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
         const { userId } = req.query;
         const items = await ItemsObject.find({ checked: false, user: userId });
@@ -33,7 +43,10 @@ router.get('/active', async (req, res) => {
     }
 });
 
-router.get('/history', async (req, res) => {
+router.get('/history',  passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}),async (req, res) => {
     try {
         const { userId } = req.query;
         const items = await ItemsObject.find({ checked: true, user: userId });
@@ -43,7 +56,10 @@ router.get('/history', async (req, res) => {
     }
 });
 
-router.patch('/:id/check', async (req, res) => {
+router.patch('/:id/check', passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
         const item = await ItemsObject.findByIdAndUpdate(
             req.params.id,
@@ -56,7 +72,10 @@ router.patch('/:id/check', async (req, res) => {
     }
 });
  
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',  passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}),async (req, res) => {
     try {
         await ItemsObject.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "Item supprimé" });
@@ -65,7 +84,10 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-router.delete('/clear/:userId', async (req, res) => {
+router.delete('/clear/:userId', passport.authenticate(["user", "admin"], {
+    session: false,
+    failWithError: true,
+}), async (req, res) => {
     try {
         const { userId } = req.params;
         const { type } = req.query; 

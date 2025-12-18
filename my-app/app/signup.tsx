@@ -8,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function SignUp() {
     const router = useRouter();
-    const { setIsLoggedIn, setUser } = useAuthStore();
+    const { setIsLoggedIn, setUser, setToken } = useAuthStore();
 
 
     const [email, setEmail] = useState("");
@@ -44,6 +44,7 @@ export default function SignUp() {
             }
             setIsLoggedIn(true);
             setUser(data.user);
+            setToken(data.token);
             Alert.alert("Succès", "Compte créé avec succès");
 
             console.log("USER CREATED ", data.user);
