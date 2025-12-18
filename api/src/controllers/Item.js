@@ -77,6 +77,7 @@ router.delete('/:id',  passport.authenticate(["user", "admin"], {
     failWithError: true,
 }),async (req, res) => {
     try {
+        //verification si bien user
         await ItemsObject.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "Item supprimé" });
     } catch (err) {

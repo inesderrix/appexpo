@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 15,
   },
-  itemContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
+  itemContainer: { flexDirection: "row", justifyContent: "space-between" ,marginBottom: 16 },
   item: { fontSize: 18 },
   checkbox: { marginRight: 10 },
   itemWithCheckbox: { flexDirection: "row", alignItems: "center" },
@@ -381,8 +381,6 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 16,
   },
-
-
 
 
 });

@@ -41,6 +41,7 @@ export default function ProfileScreen() {
             <BackgroundCircles />
 
             <View style={styles.content}>
+            <View>
 
                 <View style={styles.card}>
                     <Text style={styles.label}>Nom</Text>
@@ -51,6 +52,8 @@ export default function ProfileScreen() {
                 </View>
 
                 <Button title="Se déconnecter" color="red" onPress={handleLogout} />
+
+            </View>
             <TouchableOpacity onPress={() => deleteUser()} style={styles.buttonDanger}>
                 <Text style={styles.buttonDangerText}>Supprimer le compte</Text>
                           </TouchableOpacity>
@@ -76,6 +79,7 @@ const styles = StyleSheet.create({
     }, content: {
         flex: 1,
         padding: 20,
+        justifyContent:'space-between'
     },
 
     card: {

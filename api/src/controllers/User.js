@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const router = require('express').Router();
+const md5 = require("md5");
 
 const User = require('../models/User');
 const config = require("../../config");
@@ -14,9 +15,11 @@ router.post('/signup', async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ error: 'Email already in use' });
         }
+        const hashedPassword = md5(password);
 
-        const newUser = new User({ email, firstName: first_name, lastName: last_name, password });
+        const newUser = new User({ email, firstName: first_name, lastName: last_name, password:hashedPassword });
         await newUser.save();
+
 
         const token = jwt.sign({ _id: newUser.id }, config.SECRET, {
             expiresIn: JWT_MAX_AGE,
@@ -41,7 +44,9 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email, password }).select(
+        const hashedPassword = md5(password);
+
+        const user = await User.findOne({ email, hashedPassword }).select(
             "_id email firstName lastName"
         );
 
